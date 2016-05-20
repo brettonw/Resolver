@@ -1,5 +1,6 @@
 package com.brettonw;
 
+import com.brettonw.resolver.ResolverTest;
 import junit.framework.TestCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

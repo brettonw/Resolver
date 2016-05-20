@@ -1,8 +1,7 @@
-package com.brettonw;
+package com.brettonw.resolver;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import com.brettonw.AppTest;
+import com.brettonw.resolver.Resolver;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import java.net.URL;

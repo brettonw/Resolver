@@ -1,16 +1,14 @@
-package com.brettonw;
+package com.brettonw.resolver;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositoryCache;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -31,7 +29,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Resolver container
+ */
 public class Resolver {
+    /**
+     * Resolve a Maven artifact into an array of URLs for the artifact and all of its dependencies
+     * @param groupId
+     * @param artifactId
+     * @param version
+     * @param repositoryUrl
+     * @param repositoryPath
+     * @return
+     * @throws DependencyResolutionException
+     */
     public static URL[] get (String groupId, String artifactId, String version, String repositoryUrl, File repositoryPath) throws DependencyResolutionException {
         // configure defaults if they got left out
         if (version == null) {
@@ -59,8 +70,6 @@ public class Resolver {
         session.setCache(new DefaultRepositoryCache ());
         session.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
 
-        DependencyFilter classpathFlter = DependencyFilterUtils.classpathFilter (JavaScopes.RUNTIME);
-
         // construct the request
         CollectRequest collectRequest = new CollectRequest ();
         Artifact artifact = new DefaultArtifact (groupId, artifactId, "jar", version);
@@ -69,7 +78,7 @@ public class Resolver {
         List<RemoteRepository> repositories = new ArrayList<> (1);
         repositories.add (new RemoteRepository.Builder ("default", "default", repositoryUrl).build ());
         collectRequest.setRepositories (repositories);
-        DependencyRequest dependencyRequest = new DependencyRequest (collectRequest, classpathFlter);
+        DependencyRequest dependencyRequest = new DependencyRequest (collectRequest, DependencyFilterUtils.classpathFilter (JavaScopes.RUNTIME));
 
         // resolve the artifacts
         List<ArtifactResult> artifactResults = system.resolveDependencies (session, dependencyRequest).getArtifactResults ();
