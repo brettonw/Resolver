@@ -28,11 +28,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Resolver container
  */
 public class Resolver {
+    // see line 73 of the Aether DefaultArtifact.java source code
+    // https://github.com/eclipse/aether-core/blob/master/aether-api/src/main/java/org/eclipse/aether/artifact/DefaultArtifact.java
+    public static final String DEFAULT_EXTENSION = "jar";
+    public static final String DEFAULT_VERSION = "RELEASE";
+    public static final String DEFAULT_REPOSITORY_URL = "http://central.maven.org/maven2/";
+    public static final String DEFAULT_REPOSITORY_PATH = "m2";
+
+    private static <T> T validValue (T value, Supplier<T> supplier) {
+        return (value != null) ? value : supplier.get ();
+    }
+
     /**
      * Resolve a Maven artifact into an array of URLs for the artifact and all of its dependencies
      * @param groupId
@@ -43,17 +55,12 @@ public class Resolver {
      * @return
      * @throws DependencyResolutionException
      */
-    public static URL[] get (String groupId, String artifactId, String version, String repositoryUrl, File repositoryPath) throws DependencyResolutionException {
+    public static URL[] get (String groupId, String artifactId, String version, String extension, String repositoryUrl, File repositoryPath) throws DependencyResolutionException {
         // configure defaults if they got left out
-        if (version == null) {
-            version = "RELEASE";
-        }
-        if (repositoryUrl == null) {
-            repositoryUrl = "http://central.maven.org/maven2/";
-        }
-        if (repositoryPath == null) {
-            repositoryPath = new File ("m2");
-        }
+        extension = validValue (extension, () -> DEFAULT_EXTENSION);
+        version = validValue (version, () -> DEFAULT_VERSION);
+        repositoryUrl = validValue (repositoryUrl, () -> DEFAULT_REPOSITORY_URL);
+        repositoryPath = validValue (repositoryPath, () -> new File (DEFAULT_REPOSITORY_PATH));
 
         // create a Maven Repository service locator with File and HTTP transporters, and a
         // repository system from that
@@ -72,7 +79,7 @@ public class Resolver {
 
         // construct the request
         CollectRequest collectRequest = new CollectRequest ();
-        Artifact artifact = new DefaultArtifact (groupId, artifactId, "jar", version);
+        Artifact artifact = new DefaultArtifact (groupId, artifactId, extension, version);
 
         collectRequest.setRoot (new Dependency (artifact, JavaScopes.RUNTIME));
         List<RemoteRepository> repositories = new ArrayList<> (1);

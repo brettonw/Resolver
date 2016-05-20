@@ -4,6 +4,7 @@
  * See Also:    https://github.com/apache/maven
  *              https://github.com/eclipse/aether-demo
  *              https://github.com/eclipse/aether-core
+ *              http://www.eclipse.org/aether/
  *
  */
 package com.brettonw.resolver;
