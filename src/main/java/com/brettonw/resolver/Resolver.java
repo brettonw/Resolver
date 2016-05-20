@@ -40,6 +40,7 @@ public class Resolver {
     public static final String DEFAULT_VERSION = "RELEASE";
     public static final String DEFAULT_REPOSITORY_URL = "http://central.maven.org/maven2/";
     public static final String DEFAULT_REPOSITORY_PATH = "m2";
+    public static final String DEFAULT_REPOSITORY_TYPE = "default";
 
     private static <T> T validValue (T value, Supplier<T> supplier) {
         return (value != null) ? value : supplier.get ();
@@ -83,7 +84,7 @@ public class Resolver {
 
         collectRequest.setRoot (new Dependency (artifact, JavaScopes.RUNTIME));
         List<RemoteRepository> repositories = new ArrayList<> (1);
-        repositories.add (new RemoteRepository.Builder ("default", "default", repositoryUrl).build ());
+        repositories.add (new RemoteRepository.Builder (null, DEFAULT_REPOSITORY_TYPE, repositoryUrl).build ());
         collectRequest.setRepositories (repositories);
         DependencyRequest dependencyRequest = new DependencyRequest (collectRequest, DependencyFilterUtils.classpathFilter (JavaScopes.RUNTIME));
 
