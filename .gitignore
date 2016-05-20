@@ -10,3 +10,4 @@ buildNumber.properties
 *.iml
 m2/
 .idea
+.DS_Store
